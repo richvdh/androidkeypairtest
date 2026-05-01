@@ -162,7 +162,7 @@ public class FirstFragment extends Fragment {
     private static void validateCertsViaCheckServerTrusted(String certChainPEM) throws CertificateException {
         // Parse the certs into an array
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        var certStream = new ByteArrayInputStream(certChainPEM.getBytes());
+        var certStream = new ByteArrayInputStream(certChainPEM.getBytes(StandardCharsets.UTF_8));
         var certs = cf.generateCertificates(certStream);
         var certArray = certs.toArray(new X509Certificate[certs.size()]);
 
@@ -199,7 +199,7 @@ public class FirstFragment extends Fragment {
     private static void validateCertsViaCertPathValidator(String certChainPEM) throws GeneralSecurityException, IOException {
         // Parse the certs into a cert path
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        var certStream = new ByteArrayInputStream(certChainPEM.getBytes());
+        var certStream = new ByteArrayInputStream(certChainPEM.getBytes(StandardCharsets.UTF_8));
         var certs = cf.generateCertificates(certStream);
         var certPath = cf.generateCertPath(new ArrayList<>(certs));
 
