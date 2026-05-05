@@ -64,6 +64,8 @@ public class FirstFragment extends Fragment {
         binding.buttonVerify.setOnClickListener(v -> this.onVerifyClicked());
     }
 
+    /// Open a file picker, allowing the user to install a .pkcs12 file containing device cert and
+    /// private key. We won't have to do this in production, because the key will be pre-installed.
     private void onInstallKeyClicked(@NonNull View view) {
         var activity = this.getActivity();
 
@@ -71,14 +73,20 @@ public class FirstFragment extends Fragment {
         activity.startActivityForResult(intent, 0, null);
     }
 
+    /// Open a chooser, allowing the user to select a private key. We think this will be done for us
+    /// in production, via DevicePolicyManager.grantKeyPairToApp().
     private void onGrantKeyClicked() {
         KeyChain.choosePrivateKeyAlias(
             this.getActivity(),
             (alias) -> System.out.println("key granted:" + alias),
-            null, null, null, KEY_ALIAS
+            null, null, null, null
         );
     }
 
+    /// Get hold of (a handle to) the key, and a copy of the cert chain, and stash them in memory.
+    ///
+    /// This is a separate step because it is async and has to be done in a thread. We want to
+    /// demonstrate that we can do this once at startup, and then the rest can be synchronous.
     private void onGetKeyClicked() {
         var context = this.getContext();
 
@@ -93,6 +101,7 @@ public class FirstFragment extends Fragment {
         }).start();
     }
 
+    /// Sign a secret using the private key we grabbed earlier.
     private void onSignClicked() {
         try {
             var providers = Security.getProviders();
@@ -113,6 +122,7 @@ public class FirstFragment extends Fragment {
         }
     }
 
+    /// Verify that the certificate is valid and issued by the right trust root
     private void onVerifyClicked() {
         try {
             // The cert chain, as it would be received in the `certificates` key in the `signature`.
